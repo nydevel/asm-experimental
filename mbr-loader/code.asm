@@ -98,7 +98,8 @@ password_hashing:
     jmp password_hashing
 
 password_check:
-    cmp al, 3
+    ; Password is '111'
+    cmp al, 0x93
     je password_eq
 
     jmp password_wrong
