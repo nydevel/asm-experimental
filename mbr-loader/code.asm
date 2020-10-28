@@ -1,8 +1,16 @@
 org 0x7c00
-  
-; Show banner on start
+
+;********************************************************************;
+;*                         Banner on start                          *;
+;********************************************************************;
+
 mov si, message_banner
 call print_message
+
+
+;********************************************************************;
+;*                            Main loop                             *;
+;********************************************************************;
 
 mainloop:
     ; Print promt mark
@@ -20,7 +28,10 @@ mainloop:
 
     jmp mainloop
 
-;Function for message prtint
+;********************************************************************;
+;*                         Print message function                   *;
+;********************************************************************;
+
 print_message: 
     ; Load symbol to AL register
     lodsb
@@ -34,13 +45,16 @@ print_message:
     int 10h
     
     ; Loop this shit
-    jmp print_message 
+    jmp .done 
     
-; Return from message printing    
-print_message_end:
-    ret  
+    ; Return from message printing    
+    .done:
+        ret  
 
-; Function for key catching
+;********************************************************************;
+;*                         Catch entered keys                       *;
+;********************************************************************;
+
 key_catch:
     mov ah, 0
     int 16h
@@ -73,6 +87,10 @@ key_catch_end:
 
     ret
 
+;********************************************************************;
+;*                         Password validation                      *;
+;********************************************************************;
+
 password_correct:
     mov si, message_good
     call print_message
@@ -85,6 +103,10 @@ password_wrong:
     call print_message
 
     ret
+
+;********************************************************************;
+;*                         Password hashing/check                   *;
+;********************************************************************;
 
 password_hashing:
     add al, [si]
@@ -108,10 +130,18 @@ password_eq:
     stc
     ret    
 
+;********************************************************************;
+;*                         Exit from programm                       *;
+;********************************************************************;
+
 exit:
     ret
 
 INT 19h        ; reboot
+
+;********************************************************************;
+;*                         Variables block                          *;
+;********************************************************************;
 
 message_banner db "Please, enter password for OS boot:", 0                                         
 message_good db "Password is correct", 0x0D, 0x0A, 0
@@ -119,6 +149,10 @@ message_wrong db "Password not valid", 0x0D, 0x0A, 0
 promt db ">>", 0
 
 buffer rb 64
+
+;********************************************************************;
+;*                Filling empty space in 512 bytes                  *;
+;********************************************************************;
 
 ; Fill empty space up to 512
 db 510-($-$$) dup (0)
